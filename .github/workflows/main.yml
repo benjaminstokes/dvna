@@ -37,11 +37,18 @@ jobs:
         run: |
           pwd
           java -version
-          wget -quiet https://github.com/checkmarx-ts/CxUtils/raw/cxsast-report-redaction/cxsast-report-redaction/artifacts/cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+          wget https://github.com/checkmarx-ts/CxUtils/raw/cxsast-report-redaction/cxsast-report-redaction/artifacts/cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
           chmod 755 cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
           ls -alr
           java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar "$(pwd)/cxcli/Checkmarx/Reports/sast.pdf"
           # OPTIONAL - control if you want the PDF deleted or kept after creating the redacted version
           # rm reports/sast.pdf
           ls -alr
+          
+   
+      - name: Upload the redacted report
+        uses: actions/upload-artifact@v2
+        with: 
+          name: redacted-sast-report
+          path: "$(pwd)/cxcli/Checkmarx/Reports/redacted-report.pdf"
           
