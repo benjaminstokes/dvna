@@ -1,22 +1,15 @@
-# This is a basic workflow to help you get started with Actions
+# This is a basic workflow to perform a CxSAST Scan and get a redacted report artifact
 
 name: CI
-
-# Controls when the action will run. 
 on: [push]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
 
+      # Perform a Checkmarx CxSAST Scan and have a PDF report generated. This report will be redacted.
       - name: Checkmarx Action
         uses: checkmarx-ts/checkmarx-github-action@v1.0.3
         with:
@@ -24,31 +17,29 @@ jobs:
           cxServer: https://sekots92.dev.checkmarx-ts.com
           cxUsername: checkmarx
           cxPassword: ${{ secrets.CX_PASSWORD }}
-          cxReportPDF: sast.pdf
+          cxReportPDF: dvna_cxsast_scan_${{ GITHUB_SHA }}.pdf
           cxTeam: \CxServer
 
+      # Ensure Java is available. The report redaction tool depends on it.
       - name: Setup Java JDK
         uses: actions/setup-java@v1.4.3
         with:
-          # The Java version to make available on the path. Takes a whole or semver Java version, or 1.x syntax (e.g. 1.8 => Java 8.x). Early access versions can be specified in the form of e.g. 14-ea, 14.0.0-ea, or 14.0.0-ea.28
           java-version: 8
+      
+      - name: Download Report Redaction Tool
+        run: | 
+          wget https://github.com/checkmarx-ts/CxUtils/raw/cxsast-report-redaction/cxsast-report-redaction/artifacts/cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+          chmod 755 cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
           
       - name: Redact CxSAST Report
         run: |
-          pwd
-          java -version
-          wget https://github.com/checkmarx-ts/CxUtils/raw/cxsast-report-redaction/cxsast-report-redaction/artifacts/cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-          chmod 755 cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
-          ls -alr
-          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar "${{ github.workspace }}/cxcli/Checkmarx/Reports/sast.pdf" "${{ github.workspace }}/cxcli/Checkmarx/Reports/Redacted_CxSAST_Report.pdf"
-          # OPTIONAL - control if you want the PDF deleted or kept after creating the redacted version
-          # rm ${{ github.workspace }}/cxcli/Checkmarx/Reports/Redacted_CxSAST_Report.pdf
-          ls -alr
-          
-   
-      - name: Upload the redacted report
+          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar "${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_${{ GITHUB_SHA }}.pdff" "${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_REDACTED_${{ GITHUB_SHA }}.pdf"
+          # Un comment the line below to delete the original report if desired
+          # rm ${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_REDACTED_${{ GITHUB_SHA }}.pdf
+        
+      - name: Upload CxSAST Reports
         uses: actions/upload-artifact@v2
         with: 
-          name: redacted-sast-report
-          path: ${{ github.workspace }}/cxcli/Checkmarx/Reports/Redacted_CxSAST_Report.pdf
+          name: cxsast-reports
+          path: ${{ github.workspace }}/cxcli/Checkmarx/Reports
           
