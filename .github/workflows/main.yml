@@ -36,5 +36,9 @@ jobs:
       - name: Redact CxSAST Report
         run: |
           java -version
+          curl https://github.com/checkmarx-ts/CxUtils/raw/cxsast-report-redaction/cxsast-report-redaction/artifacts/cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar > cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
+          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar reports/sast.pdf
+          # OPTIONAL - control if you want the PDF deleted or kept after creating the redacted version
+          # rm reports/sast.pdf
           ls -alr
-          echo test, and deploy your project. 
+          
