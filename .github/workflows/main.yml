@@ -20,9 +20,11 @@ jobs:
       - name: Checkmarx Action
         uses: checkmarx-ts/checkmarx-github-action@v1.0.3
         with:
+          cxVersion: 2020.4.12
           cxServer: https://sekots92.dev.checkmarx-ts.com
           cxUsername: checkmarx
           cxPassword: ${{ secrets.CX_PASSWORD }}
+          cxReportPDF: reports/sast.pdf
           cxTeam: \CxServer
 
       - name: Setup Java JDK
