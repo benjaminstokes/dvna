@@ -24,7 +24,7 @@ jobs:
           cxServer: https://sekots92.dev.checkmarx-ts.com
           cxUsername: checkmarx
           cxPassword: ${{ secrets.CX_PASSWORD }}
-          cxReportPDF: reports/sast.pdf
+          cxReportPDF: sast.pdf
           cxTeam: \CxServer
 
       - name: Setup Java JDK
@@ -35,11 +35,13 @@ jobs:
           
       - name: Redact CxSAST Report
         run: |
+          pwd
+          $PWD
           java -version
           wget https://github.com/checkmarx-ts/CxUtils/raw/cxsast-report-redaction/cxsast-report-redaction/artifacts/cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
           chmod 755 cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar
           ls -alr
-          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar reports/sast.pdf
+          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar "$PWD/Checkmarx/Reports/sast.pdf"
           # OPTIONAL - control if you want the PDF deleted or kept after creating the redacted version
           # rm reports/sast.pdf
           ls -alr
