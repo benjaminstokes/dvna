@@ -17,7 +17,7 @@ jobs:
           cxServer: https://sekots92.dev.checkmarx-ts.com
           cxUsername: checkmarx
           cxPassword: ${{ secrets.CX_PASSWORD }}
-          cxReportPDF: dvna_cxsast_scan_${{ GITHUB_SHA }}.pdf
+          cxReportPDF: dvna_cxsast_scan_${{ github.sha }}.pdf
           cxTeam: \CxServer
 
       # Ensure Java is available. The report redaction tool depends on it.
@@ -33,9 +33,9 @@ jobs:
           
       - name: Redact CxSAST Report
         run: |
-          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar "${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_${{ GITHUB_SHA }}.pdff" "${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_REDACTED_${{ GITHUB_SHA }}.pdf"
+          java -jar cxsast-pdf-report-redactor-0.0.1-SNAPSHOT-jar-with-dependencies.jar "${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_${{ github.sha }}.pdf" "${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_REDACTED_${{ github.sha }}.pdf"
           # Un comment the line below to delete the original report if desired
-          # rm ${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_REDACTED_${{ GITHUB_SHA }}.pdf
+          # rm ${{ github.workspace }}/cxcli/Checkmarx/Reports/dvna_cxsast_scan_REDACTED_${{ github.sha }}.pdf
         
       - name: Upload CxSAST Reports
         uses: actions/upload-artifact@v2
