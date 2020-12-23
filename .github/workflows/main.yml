@@ -20,7 +20,7 @@ jobs:
       - name: Checkmarx Action
         uses: checkmarx-ts/checkmarx-github-action@v1.0.3
         with:
-          cxServer: http://sekots92.dev.checkmarx-ts.com
+          cxServer: https://sekots92.dev.checkmarx-ts.com
           cxUsername: checkmarx
           cxPassword: ${{ secrets.CX_PASSWORD }}
           cxTeam: \CxServer
